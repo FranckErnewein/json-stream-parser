@@ -1,2 +1,2 @@
 # json-stream-parser
-Transform stream allow transform JSON string fragments seperat by "end of line" - \r\n
+Transform stream allow transform JSON string fragments separated by "end of line" - \r\n into javascript objects
