@@ -68,4 +68,47 @@ describe('json-stream-parser', function() {
     parser.write('1}\r\n{"b":2}\r\n');
   });
 
+  it('should emit an error', function() {
+    var parser = new Parser();
+    expect(function() {
+      parser.write('{not valid json\r\n');
+    }).to.throw();
+  });
+
+  it('should pass in error handler', function(done) {
+    var parser = new Parser();
+    parser.on('error', function(e) {
+      expect(e).to.be.instanceof(Error);
+      expect(e.line).to.be.equal('{not valid json');
+      done();
+    });
+    parser.write('{not valid json\r\n');
+  });
+
+
+  //DO NOT WORKS !!
+  //stream do not restart after an error
+  //this could be an intersting feature
+  it.skip('should flush buffer and restart clean on an error', function(done) {
+    var parser = new Parser();
+    parser.on('error', function(e) {
+      expect(e).to.be.instanceof(Error);
+      console.log('error', e);
+    });
+    var i = 0;
+    parser.on('data', function(data) {
+      console.log('data', data);
+      i++;
+      if (i === 1) {
+        expect(data.a).to.be.deep.equal(1);
+      } else if (i === 2) {
+        expect(data.a).to.be.deep.equal(2);
+        done();
+      }
+    });
+    parser.write('{"a":1}\r\n');
+    parser.write('{not valid json\r\n');
+    parser.write('{"a":2}\r\n');
+  });
+
 });

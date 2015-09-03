@@ -4,6 +4,16 @@ var util = require('util');
 
 util.inherits(Parser, Parent);
 
+function JSONStreamParserError(line) {
+  Error.call(this);
+  this.name = 'JSONStreamParserError';
+  this.message = 'JSON parse error: \r\n' + line;
+  this.line = line;
+}
+
+util.inherits(JSONStreamParserError, Error);
+
+
 function Parser() {
   Parent.call(this, {
     readableObjectMode: true
@@ -22,7 +32,8 @@ Parser.prototype._transform = function(chunk, encoding, callback) {
     try {
       obj = JSON.parse(line);
     } catch (err) {
-      this.emit('error', err);
+      this.emit('error', new JSONStreamParserError(line));
+      return;
     }
     if (obj) {
       this.push(obj);
