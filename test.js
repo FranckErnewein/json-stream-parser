@@ -72,7 +72,7 @@ describe('json-stream-parser', function() {
     var parser = new Parser();
     expect(function() {
       parser.write('{not valid json\r\n');
-    }).to.throw();
+    }).to.throw('JSON parse error');
   });
 
   it('should pass in error handler', function(done) {
@@ -85,30 +85,30 @@ describe('json-stream-parser', function() {
     parser.write('{not valid json\r\n');
   });
 
-
-  //DO NOT WORKS !!
-  //stream do not restart after an error
-  //this could be an intersting feature
-  it.skip('should flush buffer and restart clean on an error', function(done) {
+  it('should parse with multiple break line', function(done) {
     var parser = new Parser();
-    parser.on('error', function(e) {
-      expect(e).to.be.instanceof(Error);
-      console.log('error', e);
-    });
-    var i = 0;
-    parser.on('data', function(data) {
-      console.log('data', data);
-      i++;
-      if (i === 1) {
-        expect(data.a).to.be.deep.equal(1);
-      } else if (i === 2) {
-        expect(data.a).to.be.deep.equal(2);
+    parser.write('{"a":1}\r\n\r\n{"a":2}\r\n');
+    parser.once('data', function(d1) {
+      expect(d1.a).to.be.equal(1);
+      parser.once('data', function(d2) {
+        expect(d2.a).to.be.equal(2);
         done();
-      }
+      });
     });
+  });
+
+  it('should parse not stop when receive a chunk with break line', function(done) {
+    var parser = new Parser();
     parser.write('{"a":1}\r\n');
-    parser.write('{not valid json\r\n');
+    parser.write('\r\n');
     parser.write('{"a":2}\r\n');
+    parser.once('data', function(d1) {
+      expect(d1.a).to.be.equal(1);
+      parser.once('data', function(d2) {
+        expect(d2.a).to.be.equal(2);
+        done();
+      });
+    });
   });
 
 });

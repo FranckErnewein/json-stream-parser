@@ -7,7 +7,7 @@ util.inherits(Parser, Parent);
 function JSONStreamParserError(line) {
   Error.call(this);
   this.name = 'JSONStreamParserError';
-  this.message = 'JSON parse error: \r\n' + line;
+  this.message = 'JSON parse error';
   this.line = line;
 }
 
@@ -28,15 +28,17 @@ Parser.prototype._transform = function(chunk, encoding, callback) {
   this._buffer = lines.pop();
   for (var l = 0; l < lines.length; l++) {
     var line = lines[l];
-    var obj;
-    try {
-      obj = JSON.parse(line);
-    } catch (err) {
-      this.emit('error', new JSONStreamParserError(line));
-      return;
-    }
-    if (obj) {
-      this.push(obj);
+    if(line !== ''){
+      var obj;
+      try {
+        obj = JSON.parse(line);
+      } catch (err) {
+        this.emit('error', new JSONStreamParserError(line));
+        return;
+      }
+      if (obj) {
+        this.push(obj);
+      }
     }
   }
   callback();
