@@ -11,5 +11,6 @@ npm install json-stream-parser
 
 ### parse (Boolean: false)
 
-Allow to broadcast JSON string instead of javascript Object for better performance
+Allow to broadcast JSON string instead of javascript Object for better performance,
+
 default to false
