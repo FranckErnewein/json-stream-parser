@@ -6,3 +6,10 @@ Transform stream allow transform JSON string fragments separated by "end of line
 ```
 npm install json-stream-parser
 ```
+
+## Options
+
+### parse (Boolean: false)
+
+Allow to broadcast JSON string instead of javascript Object for better performance
+default to false
