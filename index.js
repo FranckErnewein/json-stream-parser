@@ -16,9 +16,13 @@ util.inherits(JSONStreamParserError, Error);
 
 function Parser(options) {
   this.parse = (options && options.parse === false) ? false : true;
-  Parent.call(this, {
-    readableObjectMode: true
-  });
+  var _options = {
+    readableObjectMode: this.parse
+  };
+  if(!this.parse){
+    _options.encoding = 'utf8';
+  }
+  Parent.call(this, _options);
   this._buffer = '';
   this._decoder = new StringDecoder('utf8');
 }
