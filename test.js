@@ -111,4 +111,16 @@ describe('json-stream-parser', function() {
     });
   });
 
+  it('should not json parse', function(done) {
+    var parser = new Parser({
+      parse: false
+    });
+    parser.write('{"a":1}\r\n');
+    parser.once('data', function(str) {
+      expect(str).to.be.a('string');
+      expect(str).to.be.equal('{"a":1}');
+      done();
+    });
+  });
+
 });
